@@ -84,6 +84,8 @@ namespace Battousai.DependencyInjection.Tests
 
             Assert.NotNull(service);
             Assert.IsType<ParentTestService>(service);
+            Assert.NotNull(service.FirstChildService);
+            Assert.NotNull(service.SecondChildService);
         }
 
         [Fact]
@@ -144,6 +146,8 @@ namespace Battousai.DependencyInjection.Tests
 
             Assert.NotNull(service);
             Assert.IsType<UsersController>(service);
+            Assert.NotNull(service.Calculator);
+            Assert.NotNull(service.EmailService);
         }
     }
 }

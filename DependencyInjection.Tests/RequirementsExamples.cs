@@ -24,6 +24,8 @@ namespace Battousai.DependencyInjection.Tests
 
     public interface IUsersController
     {
+        ICalculator Calculator { get; }
+        IEmailService EmailService { get; }
     }
 
     public class UsersController : IUsersController

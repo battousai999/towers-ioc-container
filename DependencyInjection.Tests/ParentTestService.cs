@@ -8,6 +8,8 @@ namespace Battousai.DependencyInjection.Tests
 {
     public interface IParentTestService
     {
+        IFirstChildTestService FirstChildService { get; }
+        ISecondChildTestService SecondChildService { get; }
     }
 
     public class ParentTestService : IParentTestService
