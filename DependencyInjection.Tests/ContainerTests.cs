@@ -20,7 +20,7 @@ namespace Battousai.DependencyInjection.Tests
         {
             container.Register<ITestService, TestService>();
 
-            Assert.True(container.CanResolve<ITestService>());
+            Assert.True(container.IsRegistered<ITestService>());
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace Battousai.DependencyInjection.Tests
         {
             container.Register<ICalculator, Calculator>();
 
-            Assert.True(container.CanResolve<ICalculator>());
+            Assert.True(container.IsRegistered<ICalculator>());
         }
 
         [Fact]

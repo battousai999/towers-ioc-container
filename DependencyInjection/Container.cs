@@ -24,6 +24,18 @@ namespace Battousai.DependencyInjection
 
         private Dictionary<Type, TypeContext> registeredTypes = new Dictionary<Type, TypeContext>();
 
+        /// <summary>
+        /// Registers the type "Service" for the type "ServiceInterface".  After this registration, when
+        /// a Resolve call is made for the "ServiceInterface" type, an instance of the "Service" type will
+        /// be returned.  The "lifecycle" of the object (returned by the Resolve method) will be controlled
+        /// by the "lifecycle" parameter passed to this method.
+        /// </summary>
+        /// <typeparam name="ServiceInterface">The type under which to register the "Service" type.</typeparam>
+        /// <typeparam name="Service">The type to associate with the "ServiceInterface" type.</typeparam>
+        /// <param name="lifecycle">
+        /// A value controlling the construction of instances of the "Service" type when 
+        /// resolved.
+        /// </param>
         public void Register<ServiceInterface, Service>(LifecycleType lifecycle = LifecycleType.Transient)
         {
             var serviceInterfaceType = typeof(ServiceInterface);
@@ -35,6 +47,12 @@ namespace Battousai.DependencyInjection
             registeredTypes[serviceInterfaceType] = new TypeContext(serviceType, lifecycle);
         }
 
+        /// <summary>
+        /// Returns an instance of the type associated with the "ServiceInterface" type (via a previously-
+        /// occurring Register call).
+        /// </summary>
+        /// <typeparam name="ServiceInterface">The type to resolve.</typeparam>
+        /// <returns>An instance of the "ServiceInterface" type.</returns>
         public ServiceInterface Resolve<ServiceInterface>()
         {
             var serviceInterfaceType = typeof(ServiceInterface);
@@ -85,9 +103,9 @@ namespace Battousai.DependencyInjection
                 instance = constructor.Invoke(null);
             else
             {
-                // As a quick check, look for constructor parameters that we know cannot be resolved (so that
-                // we don't resolve/construct some parameters when it's obviously going to eventually fail).
-                var firstNonResolvableParameter = constructorParameters.FirstOrDefault(x => !CanResolve(x.ParameterType));
+                // As a quick check, look for constructor parameters that have not been registered (so that
+                // we don't resolve/construct some parameters when it will eventually fail).
+                var firstNonResolvableParameter = constructorParameters.FirstOrDefault(x => !IsRegistered(x.ParameterType));
 
                 if (firstNonResolvableParameter != null)
                     throw new ContainerResolveException($"Cannot finish resolving type \"{serviceInterfaceType.Name}\" because the constructor of its resolved type ({serviceType.Name}) has a dependency ({firstNonResolvableParameter.ParameterType.Name}) that could not be resolved.", firstNonResolvableParameter.ParameterType.FullName);
@@ -107,12 +125,17 @@ namespace Battousai.DependencyInjection
                 throw new InvalidOperationException($"Could not cast registered type \"{serviceType.Name}\" as expected type \"{serviceInterfaceType.Name}\".");
         }
 
-        public bool CanResolve<ServiceInterface>()
+        /// <summary>
+        /// Indicates whether the "ServiceInterface" type has been previously registered.
+        /// </summary>
+        /// <typeparam name="ServiceInterface">The type to check whether it has been registered.</typeparam>
+        /// <returns>A boolean value indicating whether the type has been registered.</returns>
+        public bool IsRegistered<ServiceInterface>()
         {
-            return CanResolve(typeof(ServiceInterface));
+            return IsRegistered(typeof(ServiceInterface));
         }
 
-        private bool CanResolve(Type type)
+        private bool IsRegistered(Type type)
         {
             return registeredTypes.ContainsKey(type);
         }
