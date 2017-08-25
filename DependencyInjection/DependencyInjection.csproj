@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Battousai.DependencyInjection</RootNamespace>
-    <AssemblyName>DependencyInjection</AssemblyName>
+    <AssemblyName>Battousai.DependencyInjection</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

@@ -86,7 +86,7 @@ namespace Battousai.DependencyInjection
             else
             {
                 // As a quick check, look for constructor parameters that we know cannot be resolved (so that
-                // we don't resolve/construct some parameters when it's going to fail).
+                // we don't resolve/construct some parameters when it's obviously going to eventually fail).
                 var firstNonResolvableParameter = constructorParameters.FirstOrDefault(x => !CanResolve(x.ParameterType));
 
                 if (firstNonResolvableParameter != null)
