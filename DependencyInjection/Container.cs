@@ -9,20 +9,7 @@ namespace Battousai.DependencyInjection
 {
     public class Container
     {
-        private class TypeContext
-        {
-            public Type RegisteredType { get; private set; }
-            public LifecycleType Lifecycle { get; private set; }
-            public Object SingletonInstance { get; set; }
-
-            public TypeContext(Type registeredType, LifecycleType lifecycle)
-            {
-                this.RegisteredType = registeredType;
-                this.Lifecycle = lifecycle;
-            }
-        }
-
-        private Dictionary<Type, TypeContext> registeredTypes = new Dictionary<Type, TypeContext>();
+        private Dictionary<Type, BaseTypeContext> registeredTypes = new Dictionary<Type, BaseTypeContext>();
 
         /// <summary>
         /// Registers the type "Service" for the type "ServiceInterface".  After this registration, when
@@ -44,7 +31,7 @@ namespace Battousai.DependencyInjection
             if (!serviceInterfaceType.IsAssignableFrom(serviceType))
                 throw new InvalidOperationException($"Cannot register the service type \"{typeof(Service).Name}\" because it does not implement the service interface \"{typeof(ServiceInterface).Name}\".");
 
-            registeredTypes[serviceInterfaceType] = new TypeContext(serviceType, lifecycle);
+            registeredTypes[serviceInterfaceType] = BaseTypeContext.CreateTypeContext(serviceType, lifecycle);
         }
 
         /// <summary>
@@ -65,22 +52,12 @@ namespace Battousai.DependencyInjection
 
         private object Resolve(Type serviceInterfaceType)
         {
-            TypeContext context;            
+            BaseTypeContext context;            
 
             if (!registeredTypes.TryGetValue(serviceInterfaceType, out context))
                 throw new ContainerResolveException($"Could not resolve type \"{serviceInterfaceType.Name}\" because it has not been registered.", serviceInterfaceType.FullName);
 
-            if (context.Lifecycle == LifecycleType.Singleton)
-            {
-                if (context.SingletonInstance == null)
-                    context.SingletonInstance = CreateServiceInstance(context.RegisteredType, serviceInterfaceType);
-                                
-                return context.SingletonInstance;
-            }
-            else if (context.Lifecycle == LifecycleType.Transient)
-                return CreateServiceInstance(context.RegisteredType, serviceInterfaceType);
-            else
-                throw new InvalidOperationException("Unexpected lifecycle type: " + context.Lifecycle.ToString());
+            return context.GetServiceInstance(CreateServiceInstance, serviceInterfaceType);
         }
 
         private object CreateServiceInstance(Type serviceType, Type serviceInterfaceType)
