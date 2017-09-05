@@ -41,10 +41,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseTypeContext.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="ContainerResolveException.cs" />
     <Compile Include="LifecycleType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SingletonTypeContext.cs" />
+    <Compile Include="TransientTypeContext.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
